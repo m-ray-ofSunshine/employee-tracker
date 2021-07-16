@@ -10,11 +10,11 @@ VALUES
 ("Marketing Specialist", 45000, 3),
 ("Salesperson", 55000, 2);
 
-INSERT INTO employee(first_name, last_name, role_id) 
+INSERT INTO employee(first_name, last_name, role_id, department_id) 
 VALUES 
-("Matt", "Ray", 1),
-("Krista", "Barrett", 3),
-("Robert", "James", 2),
-("Tony", "Martin", 2);
+("Matt", "Ray", 1, 1),
+("Krista", "Barrett", 3, 3),
+("Robert", "James", 4, 2),
+("Tony", "Martin", 2,2);
 
 
