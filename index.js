@@ -1,9 +1,13 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+var figlet = require('figlet');
 const { config } = require("./creds");
 const connection = mysql.createConnection(config);
 
+ 
+
 const start = () => {
+   
     inquirer
         .prompt([
             {
@@ -240,5 +244,13 @@ const getDeptId = (id) => {
 connection.connect(err => {
     if (err) throw err;
     console.log(`connected at ${connection.threadId}`);
+    figlet('Employee Tracker', function(err, data) {
+        if (err) {
+            console.log('Something went wrong...');
+            console.dir(err);
+            return;
+        }
+        console.log(data)
+    });
     start();
 });
