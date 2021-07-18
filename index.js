@@ -219,38 +219,92 @@ const addEmployee = () => {
             type: "input",
             name: "roleId",
             message: "What is the new employee's role ID?"
+        },
+        {
+            type: "input",
+            name: "deptId",
+            message: "What is the new employee's department ID?"
         }])
         .then((res) => {
 
-            let deptId = getDeptId(res.roleId);
-            console.log(deptId);
+            
             let query = 'INSERT INTO employee (first_name, last_name, role_id, department_id) VALUES (?, ?, ?, ?);';
-            connection.query(query, [res.firstName, res.lastName, res.roleId, deptId], (err, res) => {
+            connection.query(query, [res.firstName, res.lastName, res.roleId, res.deptId], (err, res) => {
                 if (err) throw err;
                 console.log("New employee added");
                 add();
             })
+        })}
+
+const updateRoleQuery = (nameArr)=> {
+    let query = `UPDATE employee
+            SET role_id = ?, department_id =? WHERE first_name = ? AND last_name = ?;`
+            connection.query(query, nameArr, (err, res) => {
+                if (err) throw err;
+                console.log("Role updated");
+            })
+}
+
+const updateRole = () => {
+    connection.query('SELECT * FROM employee', (err, results) => {
+        if (err) throw err;
+        inquirer
+          .prompt([
+            {
+              name: 'choice',
+              type: 'rawlist',
+              choices() {
+                const choiceArray = [];
+                results.forEach(({ first_name, last_name }) => {
+                    let fullName = first_name;
+                    fullName += " "
+                    fullName += last_name
+                  choiceArray.push(fullName);
+                });
+                return choiceArray;
+              },
+              message: 'What employee would you like to update?',
+            },
+            {
+                name: "role",
+                type: "input",
+                message: "What would you like the new role be?"
+            },
+            {
+                name: "roleId",
+                type: "input",
+                message: "What is the new role ID?"
+            }
+        ])
+        .then((data)=> {
+            console.log(data);
+            let roleQuery ='SELECT role.title, role.id, role.department_id FROM role WHERE role.title = ?;';
+         
+            let nameArr = data.choice.split(" ")
+              
+            connection.query(roleQuery, [data.role], (err, res)=> {
+                if(err) throw err;
+                console.log(res);
+                nameArr.unshift(res[0].id, res[0].department_id)
+                console.log(nameArr);
+                updateRoleQuery(nameArr)
+            })
+            start();            
         })
 }
-const getDeptId = (id) => {
-    let query = `SELECT role.department_id FROM role WHERE role.id = ${id};`
-    var deptId = connection.query(query, (err, res) => {
-        console.log(res[0].department_id);
-        return res[0].department_id;
-    })
-    return deptId.toString();
-}
+)}
+
 
 connection.connect(err => {
     if (err) throw err;
     console.log(`connected at ${connection.threadId}`);
-    figlet('Employee Tracker', function(err, data) {
-        if (err) {
-            console.log('Something went wrong...');
-            console.dir(err);
-            return;
-        }
-        console.log(data)
-    });
+});
+figlet('Employee Tracker', function(err, data) {
+    if (err) {
+        console.log('Something went wrong...');
+        console.dir(err);
+        return;
+    }
+    console.log(data)
     start();
 });
