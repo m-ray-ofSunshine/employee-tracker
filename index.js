@@ -247,7 +247,8 @@ const updateRoleQuery = (nameArr)=> {
 
 const updateRole = () => {
     connection.query('SELECT * FROM employee', (err, results) => {
-        if (err) throw err;
+        if (err) throw err
+        ;
         inquirer
           .prompt([
             {
